@@ -80,7 +80,8 @@ module.exports = {
         slug : e.slug,
         email : e.email,
         nickname : e.nickname,
-        avatar : e.avatar
+        avatar : e.avatar,
+        status : e.status
       }
     });
 
@@ -101,10 +102,15 @@ module.exports = {
   async addNewUser(ctx){
     let info = ctx.request.body;
     let sql = `insert into users set ?`;
-    let { affectedRows } = await query(sql,info);
+    let { affectedRows,insertId } = await query(sql,info);
+    let [user] = await query(`select * from users where id = ${insertId}`);
+    let { id,slug,email,nickname,avatar,status } = user;
     ctx.body = affectedRows === 1 ? {
       code : 200,
-      msg : '操作成功'
+      msg : '操作成功',
+      data : {
+        id , slug,email,nickname,avatar,status
+      }
     } : {
       code : '400',
       msg: '操作失败'
