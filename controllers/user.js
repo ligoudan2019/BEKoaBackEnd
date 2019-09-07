@@ -70,5 +70,70 @@ module.exports = {
       msg : '上传成功',
       path
     }
+  },
+  async getAllUsers(ctx){
+    let sql = `select * from users`;
+    let users = await query(sql);
+    let data = users.map(e=>{
+      return {
+        id : e.id,
+        slug : e.slug,
+        email : e.email,
+        nickname : e.nickname,
+        avatar : e.avatar
+      }
+    });
+
+    if(data.length !== 0){
+      ctx.body = {
+        code : 200,
+        msg : '获取成功',
+        data
+      }
+    }else {
+      ctx.body = {
+        code : 400,
+        msg : '没有数据或者获取失败',
+        data
+      }
+    }
+  },
+  async addNewUser(ctx){
+    let info = ctx.request.body;
+    let sql = `insert into users set ?`;
+    let { affectedRows } = await query(sql,info);
+    ctx.body = affectedRows === 1 ? {
+      code : 200,
+      msg : '操作成功'
+    } : {
+      code : '400',
+      msg: '操作失败'
+    }
+  },
+  async editUserById(ctx){
+    let info = ctx.request.body;
+    let {id} = info;
+    delete info.id;
+    let sql = `update users set ? where id = ${id}`;
+    let {affectedRows} = await query(sql,info);
+    ctx.body = affectedRows === 1 ? {
+      code : 200,
+      msg : '操作成功'
+    } : {
+      code : '400',
+      msg: '操作失败'
+    }
+  },
+  async deleteUserById(ctx){
+    let {id} = ctx.request.body;
+    let sql = `delete from users where id = ${id}`;
+    let {affectedRows} = await query(sql);
+    ctx.body = affectedRows === 1 ? {
+      code : 200,
+      msg : '操作成功'
+    } : {
+      code : '400',
+      msg: '操作失败'
+    }
   }
 }

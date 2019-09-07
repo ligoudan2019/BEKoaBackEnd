@@ -11,6 +11,14 @@ router.get('/getUserInfo',user.getUserInfo);
 router.post('/resetPassword',user.resetPasswrod);
 // 用户上传头像
 router.post('/uploadHeader',user.uploadHeader);
-
+// 新增用户
+router.post('/addNewUser',user.addNewUser);
+// 获取所有用户
+router.post('/getAllUsers',user.getAllUsers);
+// 编辑用户
+router.post('/editUserById',user.editUserById);
+// 删除用户
+router.post('/deleteUserById',user.deleteUserById);
+//
 
 module.exports = router.routes();
