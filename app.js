@@ -3,6 +3,7 @@ const session = require('koa-session');
 const bodyparser = require('koa-bodyparser');
 const userRouter = require('./routers/userRouter');
 const categoryRouter = require('./routers/categoryRouter');
+const articlesRouter = require('./routers/articlesRouter');
 const app = new Koa();
 
 // cookie 加密签名
@@ -28,6 +29,7 @@ app.use(bodyparser());
 // 注册用户接口路由
 app.use(userRouter);
 app.use(categoryRouter);
+app.use(articlesRouter);
 
 app.listen(9900,(err)=>{
   err && console.error(err);
