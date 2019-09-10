@@ -1,4 +1,7 @@
 const query = require('../utils/sql');
+const upload = require('../utils/upload');
+const ip = '127.0.0.1';
+const port = 9900;
 
 module.exports = {
   async getArticlesByPagination(ctx) {
@@ -38,18 +41,66 @@ module.exports = {
     }
   },
   async uploadArticlePic(ctx){
-
+    let {pic} = await upload(ctx,'articles');
+    let start = pic.path.indexOf('uploads') - 1;
+    let path = `http://${ip}:${port}` + pic.path.substring(start).replace(/\\/g,'/');
+    ctx.body = {
+      code : 200,
+      msg : '上传成功',
+      path
+    }
   },
   async addNewArticle(ctx){
-
+    let {data} = ctx.request.body;
+    let user_id = ctx.session.userInfo.id;
+    data.user_id = user_id;
+    let sql = `insert into posts set ?`;
+    let {affectedRows} = await query(sql,data);
+    ctx.body = affectedRows === 1 ? {
+      code : 200,
+      msg : '操作成功'
+    } : {
+      code : '400',
+      msg: '操作失败'
+    }
   },
   async getArticleById(ctx){
-     
+    let {id}  = ctx.require.body;
+    let sql= `select * from posts where id = ${id}`;
+    let [article] = await query(sql);
+    ctx.body = article ? {
+      code : 200,
+      msg : '操作成功',
+      data : article
+    } : {
+      code : '400',
+      msg: '操作失败'
+    }
   },
   async deleteArticleById(ctx){
-
+    let {id} = ctx.request.body;
+    let sql = `delete from posts where id = ${id}`;
+    let {affectedRows} = await query(sql);
+    ctx.body = affectedRows === 1 ? {
+      code : 200,
+      msg : '操作成功'
+    } : {
+      code : '400',
+      msg: '操作失败'
+    }
   },
   async updateArticleById(ctx){
-
+    let data = ctx.request.body;
+    let {id} = data;
+    delete data.id;
+    let sql = `update posts set ? where id = ${id}`;
+    let {affectedRows} = await query(sql,data);
+    ctx.body = affectedRows === 1 ? {
+      code : 200,
+      msg : '操作成功'
+    } : {
+      code : '400',
+      msg: '操作失败'
+    }
   }
 }
